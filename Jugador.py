@@ -50,14 +50,14 @@ class Player(pygame.sprite.Sprite):
             self.__Imgs_Jump.append(image)
 
         for i in range (1,4):
-            image = pygame.image.load("./Runner_Game/Images/Lifes ({}).png".format(i))
+            image = pygame.image.load("./Runner_Game/Images/Life/Life ({}).png".format(i))
             image = pygame.transform.scale(image,(int(image.get_width()/5),int(image.get_height()/5)))
             self.__Imgs_Lifes.append(image)
 
 
         self.image = self.__Imgs_Right[0]                     
 
-        self.Image_Life = self.__Imgs_Lifes[0]
+        self.Image_Life = self.__Imgs_Lifes[2]
 
     #Gravedad aplicada sobre el jugador
     def __gravedad(self):
@@ -168,19 +168,22 @@ class Player(pygame.sprite.Sprite):
         if self.rect.top >= self.screen.get_width() or self.rect.right <= 0 :
             self.Reload()
             self.__Lose_Life()
-
+        
     def __Add_Life(self):
-        pass
+        if self.lifes <3:
+            self.lifes += 1
+            self.Image_Life = self.__Imgs_Lifes[self.lifes-1]
     
     #Revisar como se pierden las vidas y las imagenes
     def __Lose_Life(self):
         #revisar este codigo que pereza
-        if self.lifes > 1:
-            self.lifes -= 1
-            self.Image_Life = self.__Imgs_Lifes[3-self.lifes]
-        else: 
-            self.lifes = 0
 
+        if self.lifes >1:
+            self.lifes -= 1
+            self.Image_Life = self.__Imgs_Lifes[self.lifes-1]
+        else:
+            self.lifes = 0
+    
     def New_Lvl(self):
         self.__game.Levels[self.__game.Levels.index(self.lvl)+1].locked = False
         self.lvl  = self.__game.Levels[self.__game.Levels.index(self.lvl)+1]

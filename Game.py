@@ -1,16 +1,15 @@
 import pygame
 from Setups import *
 from Jugador import *
-from Plataform import *
 from Levels import *
 from Menu import *
 from Maps import *
 
 pygame.init()
 
-clock = pygame.time.Clock()
-
 def main():
+
+    clock = pygame.time.Clock()
            
     world_width = 900                      #ancho de la pantalla
     world_height = 506                      #altura de la pantalla
@@ -31,23 +30,24 @@ def main():
             if event.type == pygame.QUIT:
                 Game_Jumping.Run = False
 
-            if Game_Jumping.Active_screen == "Main_Menu":
+            if Game_Jumping.Active_screen == "Game":
 
+                if event.type == pygame.KEYDOWN: 
+                    if event.key == pygame.K_SPACE: Game_Jumping.Player.jumping()
+
+                    if event.key == pygame.K_j:
+                        Game_Jumping.Player.acpm = 5
+                        Game_Jumping.Player.jecktpack = True
+
+                    if event.key == pygame.K_ESCAPE:
+                        Game_Jumping.Active_screen = "Stop_Menu"
+            
+            elif Game_Jumping.Active_screen == "Main_Menu":
                 if last_Mousepos[0] - pygame.mouse.get_pos()[0] != 0:
                     Game_Jumping.Main_Menu.Mouse_Controller(pygame.mouse.get_pos())
                 else:
                     Game_Jumping.Main_Menu.Events_Controller(event)
 
-            elif Game_Jumping.Active_screen == "Game":
-
-                if event.type == pygame.KEYDOWN: 
-                    if event.key == pygame.K_SPACE: Game_Jumping.Player.jumping()
-                    if event.key == pygame.K_j:
-                        Game_Jumping.Player.acpm = 5
-                        Game_Jumping.Player.jecktpack = True
-                    if event.key == pygame.K_ESCAPE:
-                        Game_Jumping.Active_screen = "Stop_Menu"
-            
             elif Game_Jumping.Active_screen == "Stop_Menu":
                 if last_Mousepos[0] - pygame.mouse.get_pos()[0] != 0:
                     Game_Jumping.Pause_Menu.Mouse_Controller(pygame.mouse.get_pos())

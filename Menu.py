@@ -1,12 +1,43 @@
 import pygame
 
-#clase menu, realiza la seleccion de los botones en el menu, controlador de mouse y controlador de eventos
+"""---------------------Clase Controlador-----------------------
+    controla los eventos de la interfaz (Menus)"""
+
+class Controlador_Interfaz():
+
+    def __init__(self):
+        self.Menus= {}
+        self.Active_screen = None
+        self.Positioned = None
+
+    def Add_Menu(self,Menu,Nombre):
+        #agregar los menus
+        self.Menus[Nombre] = Menu
+
+    def Mouse_Controller(self):
+        #controlador de mouse
+        self.Menus[]
+
+    def Teclas_Controller(self):
+        return 0
+        
+    def __Do_Selection(self):
+        return 0
+
+
+"""-------------------------Clase Menu-------------------------
+    Controlador para botones,mouse y eventos en los menus en general
+    """
+
 class Menu():
-    def __init__(self,Game):
+
+    def __init__(self,Game,Rows,Columns):
         self.game = Game
         self.window = self.game.window
         self.buttons = []
         self.Actually_Press = None
+        self.Rows = Rows
+        self.Columns = Columns
 
     def __Do_Selection(self):
         for button in self.buttons:
@@ -26,16 +57,53 @@ class Menu():
         if event.type == pygame.KEYDOWN:
 
             if event.key == pygame.K_DOWN:
-                if self.buttons.index(self.Actually_Press) + 1 == len(self.buttons):
-                    self.Actually_Press = self.buttons[0]
+
+                #si tiene mas de una columna y una fila
+                if self.Columns > 1 and self.Rows > 1:
+
+                    if self.buttons[self.buttons.index(self.Actually_Press)+ self.Columns] == len(self.buttons):
+                        self.Actually_Press = self.buttons[0]
+                    else:
+                        self.Actually_Press = self.buttons[self.buttons.index(self.Actually_Press) + self.Columns]
+    
                 else:
-                    self.Actually_Press = self.buttons[self.buttons.index(self.Actually_Press)+1]
+                    if self.buttons.index(self.Actually_Press) + 1 == len(self.buttons):
+                        self.Actually_Press = self.buttons[0]
+                    else:
+                        self.Actually_Press = self.buttons[self.buttons.index(self.Actually_Press)+1]
 
             elif event.key == pygame.K_UP:
-                if self.buttons.index(self.Actually_Press) == 0:
-                    self.Actually_Press = self.buttons[len(self.buttons)-1]
+
+                if self.Columns > 1 and self.Rows > 1:
+
+                    if self.buttons.index(self.Actually_Press) == 0:
+                        self.Actually_Press = self.buttons[len(self.buttons) - 1]
+                    else:
+                        self.Actually_Press = self.buttons[self.buttons.index(self.Actually_Press) - self.Columns]
                 else:
-                    self.Actually_Press = self.buttons[self.buttons.index(self.Actually_Press)-1]
+
+                    if self.buttons.index(self.Actually_Press) == 0:
+                        self.Actually_Press = self.buttons[len(self.buttons)-1]
+                    else:
+                        self.Actually_Press = self.buttons[self.buttons.index(self.Actually_Press)-1]
+
+            elif event.key == pygame.K_LEFT:
+
+                if self.Columns > 1:
+                    
+                    if self.buttons.index(self.Actually_Press) == 0:
+                        self.Actually_Press = self.buttons[len(self.buttons) - 1]
+                    else:
+                        self.Actually_Press = self.buttons[self.buttons.index(self.Actually_Press) - 1]
+
+            elif event.key == pygame.K_RIGHT:
+
+                if self.Columns > 1:
+                    
+                    if self.buttons.index(self.Actually_Press) + 1 == len(self.buttons):
+                        self.Actually_Press = self.buttons[0]
+                    else:
+                        self.Actually_Press = self.buttons[self.buttons.index(self.Actually_Press)+1]
 
             elif event.key == pygame.K_RETURN:
                 if self.Actually_Press.text == "Play":
@@ -49,7 +117,6 @@ class Menu():
 
                 elif self.Actually_Press.text == "Exit":
                     self.game.Run = False
-
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
                 if self.Actually_Press.text == "Play":
@@ -98,9 +165,9 @@ class Button_Game():
         self.position_x = self.position[0]
         self.position_y = self.position[1]
         self.alpha = Alpha
-        self.select = Select
+        self.__select = Select
 
-        if self.select: self.selected() 
+        if self.__select: self.selected() 
         else: self.Unselected()
         
     def selected(self):
@@ -116,7 +183,7 @@ class Button_Game():
         self.rect_render.height -= 20
 
         if self.alpha[0]:
-            self.Alpha_Button = pygame.Surface((self.rect_render.width,self.rect_render.height))
+            self.Alpha_Button = pygame.Surface((self.rect_render.width, self.rect_render.height))
 
             self.Alpha_Button.set_alpha(self.alpha[2])            # alpha level
             self.Alpha_Button.fill(self.alpha[1])                  # this fills the entire surface
@@ -151,7 +218,6 @@ class Button_Game():
         else:
             return False
 
-
     def __str__(self):
         return self.text
 
@@ -159,7 +225,7 @@ class Main_Menu(Menu):
 
     def __init__(self,Game,Background):
 
-        super().__init__(Game)
+        super().__init__(Game,3,1)
 
         image = pygame.image.load(Background).convert()
         self.Background = pygame.transform.scale(image,(self.game.width,self.game.height)).convert()
@@ -178,8 +244,10 @@ class Main_Menu(Menu):
         super().Display()
 
 class Pause_Menu(Menu):
+
     def __init__(self,Game):
-        super().__init__(Game)
+
+        super().__init__(Game,3,1)
         self.Title_Pause = Button_Game(100,80,"PAUSE",Position=(self.game.width//2,150),Alpha=(True,(0,0,0),100),Screen=self.window)
         self.Return = Button_Game(100,50,"Back",Position=(self.game.width//2,250),Alpha=(True,(0,0,0),100),Select=True,Screen=self.window)
         self.Menu = Button_Game(100,50,"Menu",Position=(self.game.width//2,330),Alpha=(True,(0,0,0),100),Screen=self.window)
@@ -191,6 +259,27 @@ class Pause_Menu(Menu):
     def display(self):
         self.Title_Pause.draw()
         super().Display()
+
+class Levels_Menu(Menu):
+
+    def __init__(self,Game,Background):
+
+        super().__init__(Game,1,3)
+
+        image = pygame.image.load(Background).convert()
+        self.Background = pygame.transform.scale(image,(self.game.width,self.game.height)).convert()
+        self.Background_rect = self.Background.get_rect()
+
+        self.buttons.append(Button_Game(100,50,"Menu",Position=(100,450),Select=False,Screen=self.window,Alpha=(True,(0,0,0),100)))
+
+        self.Actually_Press = None
+
+    def Display(self):
+        self.window.blit(self.Background,self.Background_rect)
+        super().Display()
+
+    def Add_Lvl(self,Width,Height,Image,Name,Select,Position,Screen,Lvl):
+        self.buttons.append(Button_Lvl(Width,Height,Image,Name,Position,Select,Screen,Lvl))
 
 class Button_Lvl():
     
@@ -223,9 +312,11 @@ class Button_Lvl():
 
     def draw(self):
 
+        #la logica de mostrar la seleccion es diferente por que aca se dibuja un recuadro blanco sobre la imagen en cambio en los demas botones 
+        #cambia toda la forma con el select y unselect
         if self.select: pygame.draw.rect(self.screen,(255,255,255),self.Background_rect,10)
         
-        #si esta bloqueado el nivel dibuja la imagen del candado si no, dibuja el background normal
+        #si esta bloqueado el nivel dibuja la imagen del candado si no, dibuja el background del nivel correspondiente
         if self.Lvl.locked:
             self.screen.blit(self.Background_Locked,self.Background_rect)
         else:
@@ -242,22 +333,3 @@ class Button_Lvl():
             return True
         else:
             return False
-
-class Levels_Menu(Menu):
-    def __init__(self,Game,Background):
-        super().__init__(Game)
-
-        image = pygame.image.load(Background).convert()
-        self.Background = pygame.transform.scale(image,(self.game.width,self.game.height)).convert()
-        self.Background_rect = self.Background.get_rect()
-
-        self.buttons.append(Button_Game(100,50,"Menu",Position=(100,450),Select=False,Screen=self.window,Alpha=(True,(0,0,0),100)))
-
-        self.Actually_Press = self.buttons[0]
-
-    def Display(self):
-        self.window.blit(self.Background,self.Background_rect)
-        super().Display()
-
-    def Add_Lvl(self,Width,Height,Image,Name,Select,Position,Screen,Lvl):
-        self.buttons.append(Button_Lvl(Width,Height,Image,Name,Position,Select,Screen,Lvl))
