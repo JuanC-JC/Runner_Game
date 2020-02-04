@@ -42,9 +42,9 @@ def main():
                         Game_Jumping.Controlador_Interfaz.Active_screen = Game_Jumping.Controlador_Interfaz.Menus["Pause"]
 
             else:
-                if last_Mousepos[0] - pygame.mouse.get_pos()[0] != 0:
-                    Game_Jumping.Controlador_Interfaz.Mouse_Controller(pygame.mouse.get_pos())
-                elif event.type == pygame.KEYDOWN:
+                if last_Mousepos[0] - pygame.mouse.get_pos()[0] != 0 or event.type == pygame.MOUSEBUTTONDOWN:
+                    Game_Jumping.Controlador_Interfaz.Mouse_Controller(pygame.mouse.get_pos(),event)
+                elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
                     Game_Jumping.Controlador_Interfaz.Keyboard_Controller(event)
 
         if Game_Jumping.Controlador_Interfaz.Active_screen == "Game":

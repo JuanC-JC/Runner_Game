@@ -24,13 +24,17 @@ class Controlador_Interfaz():
                 else:
                     button.Desposition()
 
-    def Mouse_Controller(self,Click_Pos):
+    def Mouse_Controller(self,Click_Pos,event):
 
         if self.Active_screen != "Game":
+
             for button in self.Active_screen.buttons:
                 if button.Touching(Click_Pos):
                     self.Positioned = button
-                    self.__Do_Positioned()    
+                    self.__Do_Positioned()
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.__Execute()
 
     def Keyboard_Controller(self,event):
 
@@ -63,10 +67,11 @@ class Controlador_Interfaz():
                 else:
                     self.Positioned = self.Active_screen.buttons[self.Active_screen.buttons.index(self.Positioned)-1]
 
-        elif event.key == pygame.K_RETURN:
+        if event.key == pygame.K_RETURN:
             self.__Execute()
 
         self.__Do_Positioned()
+
 
     def __Execute(self):
 
@@ -82,25 +87,20 @@ class Controlador_Interfaz():
         elif self.Positioned.text == "Back":
             self.Active_screen = "Game"
 
-        elif self.Positioned.text == "Nivel_1":
-            self.Game.Player.lvl = self.Game.Levels[0]
+        
+        elif self.Positioned.text[0:5] == "Nivel" and self.Game.Levels[int(self.Positioned.text[6:])-1].locked == False:
+            self.Game.Player.lvl = self.Game.Levels[int(self.Positioned.text[6:])-1]
             self.Active_screen = "Game"
-            self.Game.Player.Reload()
-
-        elif self.Positioned.text  == "Nivel_2":
-            self.Active_screen = "Game"
-            self.Game.Player.lvl = self.Game.Levels[1]
-            self.Game.Player.Reload()
-
-        elif self.Positioned.text == "Nivel_3":
-            self.Active_screen = "Game"
-            self.Game.Player.lvl = self.Game.Levels[2]
             self.Game.Player.Reload()
 
         elif self.Positioned.text == "Exit":
-            return False
+            self.Game.Run = False
 
     def Display(self):
+
+        if self.Active_screen == self.Menus["Pause"]:
+            self.Game.Player.lvl.Update()
+
         self.Active_screen.Display()
        
 """-------------------------Clase Menu-------------------------

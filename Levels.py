@@ -16,6 +16,7 @@ class level:
         self.height = height
         self.__game = Game
         self.screen = self.__game.window
+        self.Name = Name
 
         image = pygame.image.load(Background).convert()
         self.Background = pygame.transform.scale(image, (self.__game.width, self.__game.height)).convert()
@@ -51,7 +52,7 @@ class level:
     def remove(self, x):
         self.totally.pop(x)
 
-    # actualizar el estado del mapa durante el run del game
+    # actualizar el estado de los bloques "display"
     def Update(self):
 
         self.screen.blit(self.Background, self.Background_rect)
