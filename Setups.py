@@ -23,13 +23,22 @@ class New_Game():
 
                 self.Screens= {}
                 self.Run = True
+                self.Controlador_Interfaz = Controlador_Interfaz(self)
+
 
                 #crear los menus
-                self.Main_Menu = Main_Menu(self,"./Runner_Game/Images/Background_Menu.png")
-                self.Pause_Menu = Pause_Menu(self)
-                self.Levels_Menu = Levels_Menu(self,"./Runner_Game/Images/stage.jpg")
+                self.Main_Menu = Main_Menu(self,"./Runner_Game/Images/Background_Menu.png","Main")
+                self.Pause_Menu = Pause_Menu(self,"Pause")
+                self.Levels_Menu = Levels_Menu(self,"./Runner_Game/Images/stage.jpg","Levels")
+        
                 
-                self.Active_screen = "Main_Menu"
+                self.Controlador_Interfaz.Add_Menu(self.Main_Menu)
+                self.Controlador_Interfaz.Add_Menu(self.Pause_Menu)
+                self.Controlador_Interfaz.Add_Menu(self.Levels_Menu)
+
+                self.Controlador_Interfaz.Active_screen = self.Controlador_Interfaz.Menus["Main"]
+
+                self.Controlador_Interfaz.Positioned = self.Main_Menu.buttons[0]
 
                 #Creo el jugador, el parametro self hace referencia al mismo objeto "New_Game" que estoy creando en este init
                 self.Player = Player(self,x=200)
@@ -41,7 +50,6 @@ class New_Game():
                 self.Levels.append(level(Map_3,self.width+4000,self.height,self,"./Runner_Game/Images/Locked2.png","Nivel_3",(600,50)))
                 self.Levels.append(level(Map_3,self.width+4000,self.height,self,"./Runner_Game/Images/Background_Lvl.png","Nivel_4",(50,50+175+10)))
                 
-                self.Levels_Menu.Actually_Press = self.Levels_Menu.buttons[1]
                 
                 #siempre dejo desbloqueado solo el primer nivel
                 self.Levels[0].locked = False

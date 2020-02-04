@@ -32,7 +32,6 @@ class Player(pygame.sprite.Sprite):
         self.jecktpack = False
         self.acpm = 0
 
-    
     def __load_images(self,x,y):
 
         self.__Imgs_Right = []
@@ -66,6 +65,7 @@ class Player(pygame.sprite.Sprite):
 
     #Efectua el salto segun las condiciones del jugador
     def jumping(self):
+
         if self.jecktpack and self.acpm > 0:
             self.velocity_y = 7.5
             self.acpm -=1
@@ -146,8 +146,9 @@ class Player(pygame.sprite.Sprite):
                     self.Charge_Jumps += 10
                 
                 #al estar tocando el suelo, revisa si tiene los saltos cargados al 100 si es asi, asigna 2 saltos si no lo es solo asigna 1 salto
+                #coloque 110 por que el hace el calculo mas rapido aca que los frames a si que lo deja saltar antes de tiempo
             
-                if self.Charge_Jumps >= 100:
+                if self.Charge_Jumps >= 110:
                     self.jumps = 2
                 else:
                     self.jumps = 1

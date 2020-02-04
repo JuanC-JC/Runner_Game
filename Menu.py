@@ -5,51 +5,130 @@ import pygame
 
 class Controlador_Interfaz():
 
-    def __init__(self):
-        self.Menus= {}
+    def __init__(self,Game):
+        self.Game = Game
+        self.Menus = {}
         self.Active_screen = None
         self.Positioned = None
 
-    def Add_Menu(self,Menu,Nombre):
+    def Add_Menu(self,Menu):
         #agregar los menus
-        self.Menus[Nombre] = Menu
+        self.Menus[Menu.Name] = Menu
 
-    def Mouse_Controller(self):
-        #controlador de mouse
-        self.Menus[]
+    def __Do_Positioned(self):
 
-    def Teclas_Controller(self):
-        return 0
+        if self.Active_screen != "Game":
+            for button in self.Active_screen.buttons:
+                if button == self.Positioned:
+                    button.Position()
+                else:
+                    button.Desposition()
+
+    def Mouse_Controller(self,Click_Pos):
+
+        if self.Active_screen != "Game":
+            for button in self.Active_screen.buttons:
+                if button.Touching(Click_Pos):
+                    self.Positioned = button
+                    self.__Do_Positioned()    
+
+    def Keyboard_Controller(self,event):
+
+        if event.key == pygame.K_DOWN:
+
+                #si tiene mas de una columna y una fila
+            if self.Active_screen.Columns > 1 and self.Active_screen.Rows > 1:
+                if self.Active_screen.buttons[self.Active_screen.buttons.index(self.Positioned)+ self.Active_screen.Columns] == len(self.Active_screen.buttons):
+                    self.Positioned = self.Active_screen.buttons[0]
+                else:
+                    self.Positioned = self.Active_screen.buttons[self.Active_screen.buttons.index(self.Positioned) + self.Active_screen.Columns]
         
-    def __Do_Selection(self):
-        return 0
+            else:
+                if self.Active_screen.buttons.index(self.Positioned) + 1 == len(self.Active_screen.buttons):
+                    self.Positioned = self.Active_screen.buttons[0]
+                else:
+                    self.Positioned = self.Active_screen.buttons[self.Active_screen.buttons.index(self.Positioned)+1]
 
+        elif event.key == pygame.K_UP:
 
+            if self.Active_screen.Columns > 1 and self.Active_screen.Rows > 1:
+
+                if self.Active_screen.buttons.index(self.Positioned) == 0:
+                    self.Positioned = self.Active_screen.buttons[len(self.Active_screen.buttons) - 1]
+                else:
+                    self.Positioned = self.Active_screen.buttons[self.Active_screen.buttons.index(self.Positioned) - self.Active_screen.Columns]
+            else:
+                if self.Active_screen.buttons.index(self.Positioned) == 0:
+                    self.Positioned = self.Active_screen.buttons[len(self.Active_screen.buttons)-1]
+                else:
+                    self.Positioned = self.Active_screen.buttons[self.Active_screen.buttons.index(self.Positioned)-1]
+
+        elif event.key == pygame.K_RETURN:
+            self.__Execute()
+
+        self.__Do_Positioned()
+
+    def __Execute(self):
+
+        if self.Positioned.text == "Play":
+            self.Active_screen = self.Menus["Levels"]
+
+        elif self.Positioned.text == "Menu":
+            self.Active_screen = self.Menus["Main"]
+
+        elif self.Positioned.text == "Pause":
+            self.Active_screen = self.Menus["Pause"]
+
+        elif self.Positioned.text == "Back":
+            self.Active_screen = "Game"
+
+        elif self.Positioned.text == "Nivel_1":
+            self.Game.Player.lvl = self.Game.Levels[0]
+            self.Active_screen = "Game"
+            self.Game.Player.Reload()
+
+        elif self.Positioned.text  == "Nivel_2":
+            self.Active_screen = "Game"
+            self.Game.Player.lvl = self.Game.Levels[1]
+            self.Game.Player.Reload()
+
+        elif self.Positioned.text == "Nivel_3":
+            self.Active_screen = "Game"
+            self.Game.Player.lvl = self.Game.Levels[2]
+            self.Game.Player.Reload()
+
+        elif self.Positioned.text == "Exit":
+            return False
+
+    def Display(self):
+        self.Active_screen.Display()
+       
 """-------------------------Clase Menu-------------------------
     Controlador para botones,mouse y eventos en los menus en general
     """
 
 class Menu():
 
-    def __init__(self,Game,Rows,Columns):
+    def __init__(self,Game,Name,Rows,Columns):
         self.game = Game
         self.window = self.game.window
         self.buttons = []
-        self.Actually_Press = None
+        self.Positioned = None
         self.Rows = Rows
         self.Columns = Columns
+        self.Name = Name
 
     def __Do_Selection(self):
         for button in self.buttons:
-            if button == self.Actually_Press:
-                button.selected()
+            if button == self.Positioned:
+                button.Position()
             else:
-                button.Unselected()
+                button.Desposition()
 
     def Mouse_Controller(self,Click_Pos):
         for button in self.buttons:
             if button.Touching(Click_Pos):
-                self.Actually_Press = button
+                self.Positioned = button
                 self.__Do_Selection()      
 
     def Events_Controller(self,event):
@@ -61,87 +140,87 @@ class Menu():
                 #si tiene mas de una columna y una fila
                 if self.Columns > 1 and self.Rows > 1:
 
-                    if self.buttons[self.buttons.index(self.Actually_Press)+ self.Columns] == len(self.buttons):
-                        self.Actually_Press = self.buttons[0]
+                    if self.buttons[self.buttons.index(self.Positioned)+ self.Columns] == len(self.buttons):
+                        self.Positioned = self.buttons[0]
                     else:
-                        self.Actually_Press = self.buttons[self.buttons.index(self.Actually_Press) + self.Columns]
+                        self.Positioned = self.buttons[self.buttons.index(self.Positioned) + self.Columns]
     
                 else:
-                    if self.buttons.index(self.Actually_Press) + 1 == len(self.buttons):
-                        self.Actually_Press = self.buttons[0]
+                    if self.buttons.index(self.Positioned) + 1 == len(self.buttons):
+                        self.Positioned = self.buttons[0]
                     else:
-                        self.Actually_Press = self.buttons[self.buttons.index(self.Actually_Press)+1]
+                        self.Positioned = self.buttons[self.buttons.index(self.Positioned)+1]
 
             elif event.key == pygame.K_UP:
 
                 if self.Columns > 1 and self.Rows > 1:
 
-                    if self.buttons.index(self.Actually_Press) == 0:
-                        self.Actually_Press = self.buttons[len(self.buttons) - 1]
+                    if self.buttons.index(self.Positioned) == 0:
+                        self.Positioned = self.buttons[len(self.buttons) - 1]
                     else:
-                        self.Actually_Press = self.buttons[self.buttons.index(self.Actually_Press) - self.Columns]
+                        self.Positioned = self.buttons[self.buttons.index(self.Positioned) - self.Columns]
                 else:
 
-                    if self.buttons.index(self.Actually_Press) == 0:
-                        self.Actually_Press = self.buttons[len(self.buttons)-1]
+                    if self.buttons.index(self.Positioned) == 0:
+                        self.Positioned = self.buttons[len(self.buttons)-1]
                     else:
-                        self.Actually_Press = self.buttons[self.buttons.index(self.Actually_Press)-1]
+                        self.Positioned = self.buttons[self.buttons.index(self.Positioned)-1]
 
             elif event.key == pygame.K_LEFT:
 
                 if self.Columns > 1:
                     
-                    if self.buttons.index(self.Actually_Press) == 0:
-                        self.Actually_Press = self.buttons[len(self.buttons) - 1]
+                    if self.buttons.index(self.Positioned) == 0:
+                        self.Positioned = self.buttons[len(self.buttons) - 1]
                     else:
-                        self.Actually_Press = self.buttons[self.buttons.index(self.Actually_Press) - 1]
+                        self.Positioned = self.buttons[self.buttons.index(self.Positioned) - 1]
 
             elif event.key == pygame.K_RIGHT:
 
                 if self.Columns > 1:
                     
-                    if self.buttons.index(self.Actually_Press) + 1 == len(self.buttons):
-                        self.Actually_Press = self.buttons[0]
+                    if self.buttons.index(self.Positioned) + 1 == len(self.buttons):
+                        self.Positioned = self.buttons[0]
                     else:
-                        self.Actually_Press = self.buttons[self.buttons.index(self.Actually_Press)+1]
+                        self.Positioned = self.buttons[self.buttons.index(self.Positioned)+1]
 
             elif event.key == pygame.K_RETURN:
-                if self.Actually_Press.text == "Play":
+                if self.Positioned.text == "Play":
                     self.game.Active_screen = "Lvls_Menu"
 
-                elif self.Actually_Press.text == "Menu":
+                elif self.Positioned.text == "Menu":
                     self.game.Active_screen = "Main_Menu"
 
-                elif self.Actually_Press.text == "Back":
+                elif self.Positioned.text == "Back":
                     self.game.Active_screen = "Game"
 
-                elif self.Actually_Press.text == "Exit":
+                elif self.Positioned.text == "Exit":
                     self.game.Run = False
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
-                if self.Actually_Press.text == "Play":
+                if self.Positioned.text == "Play":
                     self.game.Active_screen = "Lvls_Menu"
 
-                elif self.Actually_Press.text == "Menu":
+                elif self.Positioned.text == "Menu":
                     self.game.Active_screen = "Main_Menu"
 
-                elif self.Actually_Press.text == "Back":
+                elif self.Positioned.text == "Back":
                     self.game.Active_screen = "Game"
 
-                elif self.Actually_Press.text =="Exit":
+                elif self.Positioned.text =="Exit":
                     self.game.Run = False
 
-                elif self.Actually_Press.text == "Nivel_1":
+                elif self.Positioned.text == "Nivel_1":
                     self.game.Active_screen = "Game"
                     self.game.Player.lvl = self.game.Levels[0]
                     self.game.Player.Reload()
 
-                elif self.Actually_Press.text == "Nivel_2" and self.game.Levels[1].locked == False :
+                elif self.Positioned.text == "Nivel_2" and self.game.Levels[1].locked == False :
                     self.game.Active_screen = "Game"
                     self.game.Player.lvl = self.game.Levels[1]
                     self.game.Player.Reload()
 
-                elif self.Actually_Press.text == "Nivel_3" and self.game.Levels[2].locked == False:
+                elif self.Positioned.text == "Nivel_3" and self.game.Levels[2].locked == False:
                     self.game.Active_screen = "Game"
                     self.game.Player.lvl = self.game.Levels[2]
                     self.game.Player.Reload()
@@ -151,6 +230,9 @@ class Menu():
     def Display(self):
         for button in self.buttons:
             button.draw()
+
+    def __str__(self):
+        return self.Name
 
 class Button_Game():
     
@@ -167,10 +249,10 @@ class Button_Game():
         self.alpha = Alpha
         self.__select = Select
 
-        if self.__select: self.selected() 
-        else: self.Unselected()
+        if self.__select: self.Position() 
+        else: self.Desposition()
         
-    def selected(self):
+    def Position(self):
 
         self.__font = pygame.font.SysFont("comicsansms",self.height+10)
 
@@ -188,7 +270,7 @@ class Button_Game():
             self.Alpha_Button.set_alpha(self.alpha[2])            # alpha level
             self.Alpha_Button.fill(self.alpha[1])                  # this fills the entire surface
 
-    def Unselected(self):
+    def Desposition(self):
         
         self.__font = pygame.font.SysFont("comicsansms",self.height)
 
@@ -223,48 +305,53 @@ class Button_Game():
 
 class Main_Menu(Menu):
 
-    def __init__(self,Game,Background):
+    def __init__(self,Game,Background,Name):
 
-        super().__init__(Game,3,1)
+        super().__init__(Game,Name,3,1)
 
         image = pygame.image.load(Background).convert()
         self.Background = pygame.transform.scale(image,(self.game.width,self.game.height)).convert()
         self.Background_rect = self.Background.get_rect()
 
         self.Name_Game = Button_Game(100,100,"Can you jump?",Position=(self.game.width//2,100),Screen=self.window)
-        self.Play = Button_Game(100,50,"Play",Position=(self.game.width//2,300),Select=True,Screen=self.window,Alpha=(True,(0,0,0),100))
-        self.Store = Button_Game(100,50,"Store",Position=(self.game.width//2,370),Screen=self.window,Alpha=(True,(0,0,0),100))
-        self.Exit = Button_Game(100,50,"Exit",Position=(self.game.width//2,440),Screen=self.window,Alpha=(True,(0,0,0),100))
-        self.buttons = [self.Play,self.Store,self.Exit]
-        self.Actually_Press = self.Play
 
-    def display(self):
+        self.Play = Button_Game(100,50,"Play",Position=(self.game.width//2,300),Select=True,Screen=self.window,Alpha=(True,(0,0,0),100))
+
+        self.Store = Button_Game(100,50,"Store",Position=(self.game.width//2,370),Screen=self.window,Alpha=(True,(0,0,0),100))
+
+        self.Exit = Button_Game(100,50,"Exit",Position=(self.game.width//2,440),Screen=self.window,Alpha=(True,(0,0,0),100))
+
+        self.buttons = [self.Play,self.Store,self.Exit]
+
+        self.Positioned = self.Play
+
+    def Display(self):
         self.window.blit(self.Background,self.Background_rect)
         self.Name_Game.draw()
         super().Display()
 
 class Pause_Menu(Menu):
 
-    def __init__(self,Game):
+    def __init__(self,Game,Name):
 
-        super().__init__(Game,3,1)
+        super().__init__(Game,Name,3,1)
         self.Title_Pause = Button_Game(100,80,"PAUSE",Position=(self.game.width//2,150),Alpha=(True,(0,0,0),100),Screen=self.window)
         self.Return = Button_Game(100,50,"Back",Position=(self.game.width//2,250),Alpha=(True,(0,0,0),100),Select=True,Screen=self.window)
         self.Menu = Button_Game(100,50,"Menu",Position=(self.game.width//2,330),Alpha=(True,(0,0,0),100),Screen=self.window)
         self.Exit = Button_Game(100,50,"Exit",Position=(self.game.width//2,410),Alpha=(True,(0,0,0),100),Screen=self.window)
 
         self.buttons= [self.Return,self.Menu,self.Exit]
-        self.Actually_Press = self.Return
+        self.Positioned = self.Return
         
-    def display(self):
+    def Display(self):
         self.Title_Pause.draw()
         super().Display()
 
 class Levels_Menu(Menu):
 
-    def __init__(self,Game,Background):
+    def __init__(self,Game,Background,Name):
 
-        super().__init__(Game,1,3)
+        super().__init__(Game,Name,1,3)
 
         image = pygame.image.load(Background).convert()
         self.Background = pygame.transform.scale(image,(self.game.width,self.game.height)).convert()
@@ -272,7 +359,7 @@ class Levels_Menu(Menu):
 
         self.buttons.append(Button_Game(100,50,"Menu",Position=(100,450),Select=False,Screen=self.window,Alpha=(True,(0,0,0),100)))
 
-        self.Actually_Press = None
+        self.Positioned = None
 
     def Display(self):
         self.window.blit(self.Background,self.Background_rect)
@@ -307,8 +394,8 @@ class Button_Lvl():
         self.Background_rect.x = self.position_x
         self.Background_rect.y = self.position_y
 
-        if self.select: self.selected() 
-        else: self.Unselected()
+        if self.select: self.Position() 
+        else: self.Desposition()
 
     def draw(self):
 
@@ -322,10 +409,10 @@ class Button_Lvl():
         else:
             self.screen.blit(self.Background,self.Background_rect)
 
-    def selected(self):
+    def Position(self):
         self.select = True
 
-    def Unselected(self):
+    def Desposition(self):
         self.select = False
 
     def Touching(self,Cl_Pos):
@@ -333,3 +420,6 @@ class Button_Lvl():
             return True
         else:
             return False
+    
+    def __str__(self):
+        return self.text

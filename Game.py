@@ -30,8 +30,7 @@ def main():
             if event.type == pygame.QUIT:
                 Game_Jumping.Run = False
 
-            if Game_Jumping.Active_screen == "Game":
-
+            if Game_Jumping.Controlador_Interfaz.Active_screen == "Game":
                 if event.type == pygame.KEYDOWN: 
                     if event.key == pygame.K_SPACE: Game_Jumping.Player.jumping()
 
@@ -40,39 +39,19 @@ def main():
                         Game_Jumping.Player.jecktpack = True
 
                     if event.key == pygame.K_ESCAPE:
-                        Game_Jumping.Active_screen = "Stop_Menu"
-            
-            elif Game_Jumping.Active_screen == "Main_Menu":
+                        Game_Jumping.Controlador_Interfaz.Active_screen = Game_Jumping.Controlador_Interfaz.Menus["Pause"]
+
+            else:
                 if last_Mousepos[0] - pygame.mouse.get_pos()[0] != 0:
-                    Game_Jumping.Main_Menu.Mouse_Controller(pygame.mouse.get_pos())
-                else:
-                    Game_Jumping.Main_Menu.Events_Controller(event)
+                    Game_Jumping.Controlador_Interfaz.Mouse_Controller(pygame.mouse.get_pos())
+                elif event.type == pygame.KEYDOWN:
+                    Game_Jumping.Controlador_Interfaz.Keyboard_Controller(event)
 
-            elif Game_Jumping.Active_screen == "Stop_Menu":
-                if last_Mousepos[0] - pygame.mouse.get_pos()[0] != 0:
-                    Game_Jumping.Pause_Menu.Mouse_Controller(pygame.mouse.get_pos())
-                else:
-                    Game_Jumping.Pause_Menu.Events_Controller(event)
-
-            elif Game_Jumping.Active_screen =="Lvls_Menu":
-                if last_Mousepos[0] - pygame.mouse.get_pos()[0] != 0:
-                    Game_Jumping.Levels_Menu.Mouse_Controller(pygame.mouse.get_pos())
-                else:
-                    Game_Jumping.Levels_Menu.Events_Controller(event)
-
-        if Game_Jumping.Active_screen == "Main_Menu":
-            Game_Jumping.Main_Menu.display()
-            
-        elif Game_Jumping.Active_screen =="Stop_Menu":
-            Game_Jumping.Player.lvl.Update()
-            Game_Jumping.Pause_Menu.display()
-
-        elif Game_Jumping.Active_screen == "Lvls_Menu":
-            Game_Jumping.Levels_Menu.Display()
-            
-        elif Game_Jumping.Active_screen == "Game":
+        if Game_Jumping.Controlador_Interfaz.Active_screen == "Game":
             Game_Jumping.Player.update()
- 
+        else:
+            Game_Jumping.Controlador_Interfaz.Display()
+
         pygame.display.update()
                     
         clock.tick(FPS)
