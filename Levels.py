@@ -7,7 +7,6 @@ from Menu import *
     el nivel y recibe una url de imagen de fondo
     """
 
-
 class level:
     def __init__(self, matrix, width, height, Game, Background, Name, Button_Position):
         
