@@ -1,9 +1,10 @@
-import pygame
 from Setups import *
 from Jugador import *
 from Levels import *
 from Menu import *
 from Maps import *
+
+from pygame import *
 
 pygame.init()
 
