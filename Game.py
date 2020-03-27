@@ -10,6 +10,7 @@ pygame.init()
 
 def main():
 
+    #modificandolo desde otro pc que proooooo 
     clock = pygame.time.Clock()
            
     world_width = 900                      #ancho de la pantalla
